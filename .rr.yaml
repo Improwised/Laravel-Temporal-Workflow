@@ -1,0 +1,10 @@
+rpc:
+  listen: tcp://127.0.0.1:6001
+
+server:
+  command: "php artisan init:workflow"
+
+temporal:
+  address: "localhost:7233"
+  activities:
+    num_workers: 10
