@@ -4,9 +4,8 @@ namespace App\Console\Commands;
 
 
 use Temporal\WorkerFactory;
-use App\DemoWorkflow;
-use App\ChildWorkflow;
-use App\DemoWorkflowActivity;
+use App\UserWorkflow;
+use App\GreetingActivity;
 use Illuminate\Console\Command;
 
 ini_set('display_errors', 'stderr');
@@ -60,10 +59,10 @@ class TemporalWorkFlow extends Command
         $worker = $factory->newWorker();
 
         // Workflows are stateful. So you need a type to create instances.
-        $worker->registerWorkflowTypes(DemoWorkflow::class, ChildWorkflow::class);
+        $worker->registerWorkflowTypes(UserWorkflow::class);
 
         // Activities are stateless and thread safe. So a shared instance is used.
-        $worker->registerActivityImplementations(new DemoWorkflowActivity());
+        $worker->registerActivityImplementations(new GreetingActivity());
         // To register multiple Activities with the Worker, each Activity implementation name must be unique.
         // And you must provide all Activity function names in the registration call like so:
         // $worker->registerActivityImplementations(new App/ActivityA(), new App/ActivityB(), new App/ActivityC());
