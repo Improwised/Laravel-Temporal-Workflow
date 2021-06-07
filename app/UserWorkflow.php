@@ -1,17 +1,20 @@
 <?php
 namespace App;
 
+use App\Models\User;
 use Temporal\Workflow;
+use App\GreetingActivity;
 use Temporal\Workflow\WorkflowInterface;
 use Temporal\Workflow\WorkflowMethod;
 use Carbon\CarbonInterval;
 use Temporal\Activity\ActivityOptions;
+use Log;
 
-#[WorkflowInterface]
-class ChildWorkflow
+#[Workflow\WorkflowInterface]
+class UserWorkflow 
 {
     private $greetingActivity;
-
+    
     public function __construct()
     {
         /**
@@ -20,14 +23,15 @@ class ChildWorkflow
          * activity invocations.
          */
         $this->greetingActivity = Workflow::newActivityStub(
-            DemoWorkflowActivity::class,
+            GreetingActivity::class,
             ActivityOptions::new()->withStartToCloseTimeout(CarbonInterval::seconds(2))
         );
     }
 
-    #[WorkflowMethod("Child.greet")]
-    public function greet()
+    #[Workflow\WorkflowMethod("GreetMethod")]
+    public function greet($userId)
     {
-        return yield $this->greetingActivity->composeGreeting('Hello Child from');
+       Log::info('UserWorkflow->greet()',["User" => $userId]); 
+       return yield $this->greetingActivity->composeGreeting($userId);
     }
 }

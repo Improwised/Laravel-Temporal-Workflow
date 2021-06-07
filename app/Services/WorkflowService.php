@@ -1,36 +1,34 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Services;
 
 use Log;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\WorkflowService;
 use Temporal\Client\GRPC\ServiceClient;
 use Temporal\Client\WorkflowClient;
-use App\DemoWorkflow;
+use App\UserWorkflow;
 use Temporal\Client\WorkflowOptions;
 use Carbon\CarbonInterval;
 
-class DemoWorkFlowController extends Controller 
+class WorkflowService
 {
-
 	protected  $workflowClient;
 
-	public function __construct()
+    public function __construct()
     {
         $this->workflowClient = WorkflowClient::create(ServiceClient::create('localhost:7233'));
-    	
-    }
+	}
 
-    public function index(Request $request)
+
+    public function sendWelcomeEmail(User $user)
     {
-        Log::info('Trigger DemoWorkflow');	
+    	
 		$workflow = $this->workflowClient->newWorkflowStub(
-            DemoWorkflow::class,
+            UserWorkflow::class,
             WorkflowOptions::new()->withWorkflowExecutionTimeout(CarbonInterval::minute())
         );
-
-		$run = $this->workflowClient->start($workflow);
-		var_dump($run->getExecution()->getID());
+        $run = $this->workflowClient->start($workflow, $user->id);
     }
 }
